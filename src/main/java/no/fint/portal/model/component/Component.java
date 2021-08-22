@@ -63,6 +63,9 @@ public final class Component implements BasicLdapEntry {
     @Attribute(name = "fintComponentIsInPlayWithFint")
     private boolean isInPlayWithFint;
 
+    @Attribute(name = "fintComponentDockerImage")
+    private String dockerImage;
+
     public Component() {
 
         organisations = new ArrayList<>();
