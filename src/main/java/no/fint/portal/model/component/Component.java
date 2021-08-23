@@ -66,6 +66,9 @@ public final class Component implements BasicLdapEntry {
     @Attribute(name = "fintComponentDockerImage")
     private String dockerImage;
 
+    @Attribute(name = "fintComponentSizes")
+    private String componentSizes;
+
     public Component() {
 
         organisations = new ArrayList<>();
