@@ -49,6 +49,9 @@ public final class Organisation implements BasicLdapEntry {
     @Attribute(name = "fintOrganisationTechnical")
     private List<String> techicalContacts;
 
+    @Attribute(name = "fintOrganisationK8sSize")
+    private String k8sSize;
+
     @Transient
     private String primaryAssetId;
 
