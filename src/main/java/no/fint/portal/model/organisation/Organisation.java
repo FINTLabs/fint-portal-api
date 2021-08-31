@@ -52,6 +52,12 @@ public final class Organisation implements BasicLdapEntry {
     @Attribute(name = "fintOrganisationK8sSize")
     private String k8sSize;
 
+    @ApiModelProperty(
+            value = "Indicates if the organistion is a customer. Typically if it's a customer k8s deployments should be created."
+    )
+    @Attribute(name = "fintOrganisationCustomer")
+    private boolean customer;
+
     @Transient
     private String primaryAssetId;
 
