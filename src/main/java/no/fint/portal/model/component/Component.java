@@ -69,11 +69,15 @@ public final class Component implements BasicLdapEntry {
     @Attribute(name = "fintComponentSizes")
     private String componentSizes;
 
+    @Attribute(name = "fintComponentCacheDisabledFor")
+    private List<String> cacheDisabledFor;
+
     public Component() {
 
         organisations = new ArrayList<>();
         clients = new ArrayList<>();
         adapters = new ArrayList<>();
+        cacheDisabledFor = new ArrayList<>();
     }
 
     public List<String> getOrganisations() {
@@ -89,7 +93,7 @@ public final class Component implements BasicLdapEntry {
     }
 
     public void addOrganisation(String organisationDn) {
-        if (!organisations.stream().anyMatch(organisationDn::equalsIgnoreCase)) {
+        if (organisations.stream().noneMatch(organisationDn::equalsIgnoreCase)) {
             organisations.add(organisationDn);
         }
     }
@@ -99,7 +103,7 @@ public final class Component implements BasicLdapEntry {
     }
 
     public void addClient(String clientDn) {
-        if (!clients.stream().anyMatch(clientDn::equalsIgnoreCase)) {
+        if (clients.stream().noneMatch(clientDn::equalsIgnoreCase)) {
             clients.add(clientDn);
         }
     }
@@ -109,13 +113,23 @@ public final class Component implements BasicLdapEntry {
     }
 
     public void addAdapter(String adapterDn) {
-        if (!adapters.stream().anyMatch(adapterDn::equalsIgnoreCase)) {
+        if (adapters.stream().noneMatch(adapterDn::equalsIgnoreCase)) {
             adapters.add(adapterDn);
         }
     }
 
     public void removeAdapter(String adapterDn) {
         adapters.removeIf(adapter -> adapter.equalsIgnoreCase(adapterDn));
+    }
+
+    public List<String> getCacheDisabledFor() {
+        return cacheDisabledFor;
+    }
+
+    public void setCacheDisabledFor(String entity) {
+        if (cacheDisabledFor.stream().noneMatch(entity::equalsIgnoreCase)) {
+            cacheDisabledFor.add(entity);
+        }
     }
 
     @Override
