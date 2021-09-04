@@ -63,21 +63,14 @@ public final class Component implements BasicLdapEntry {
     @Attribute(name = "fintComponentIsInPlayWithFint")
     private boolean isInPlayWithFint;
 
-    @Attribute(name = "fintComponentDockerImage")
-    private String dockerImage;
-
-    @Attribute(name = "fintComponentSizes")
-    private String componentSizes;
-
-    @Attribute(name = "fintComponentCacheDisabledFor")
-    private List<String> cacheDisabledFor;
+    @ApiModelProperty(value = "A JSON object defining the K8S configuration of the component.")
+    @Attribute(name = "fintComponentConfiguration")
+    private String componentConfiguration;
 
     public Component() {
-
         organisations = new ArrayList<>();
         clients = new ArrayList<>();
         adapters = new ArrayList<>();
-        cacheDisabledFor = new ArrayList<>();
     }
 
     public List<String> getOrganisations() {
@@ -122,15 +115,6 @@ public final class Component implements BasicLdapEntry {
         adapters.removeIf(adapter -> adapter.equalsIgnoreCase(adapterDn));
     }
 
-    public List<String> getCacheDisabledFor() {
-        return cacheDisabledFor;
-    }
-
-    public void setCacheDisabledFor(String entity) {
-        if (cacheDisabledFor.stream().noneMatch(entity::equalsIgnoreCase)) {
-            cacheDisabledFor.add(entity);
-        }
-    }
 
     @Override
     public String getDn() {
