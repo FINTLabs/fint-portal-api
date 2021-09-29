@@ -64,8 +64,8 @@ public final class Component implements BasicLdapEntry {
     private boolean isInPlayWithFint;
 
     @ApiModelProperty(value = "A JSON object defining the K8S configuration of the component.")
-    @Attribute(name = "fintComponentConfiguration")
-    private String componentConfiguration;
+    @Attribute(name = "fintComponentConsumerConfig")
+    private String componentConsumerConfiguration;
 
     public Component() {
         organisations = new ArrayList<>();
