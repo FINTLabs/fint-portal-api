@@ -4,12 +4,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.ToString;
 import no.fint.portal.ldap.BasicLdapEntry;
+import no.fint.portal.utilities.LdapTimestamp;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 import org.springframework.ldap.support.LdapNameBuilder;
+import org.springframework.util.StringUtils;
 
 import javax.naming.Name;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +58,11 @@ public final class Client implements BasicLdapEntry {
     @Attribute(name = "fintClientAccessPackages")
     private List<String> accessPackages;
 
+
+    @Attribute(name = "loginTime")
+    private String lastLoginTime;
+
+
     public Client() {
         components = new ArrayList<>();
         accessPackages = new ArrayList<>();
@@ -68,6 +76,17 @@ public final class Client implements BasicLdapEntry {
 
     public void removeComponent(String componentDn) {
         components.removeIf(component -> component.equalsIgnoreCase(componentDn));
+    }
+
+    public LocalDateTime getLastLoginTime() {
+        if (StringUtils.hasText(lastLoginTime)) {
+            return LdapTimestamp.toLocalTimeDate(lastLoginTime);
+        }
+        return null;
+    }
+
+    public void setLastLoginTime(String lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 
     public void setAccessPackage(String accessPackageDn) {
