@@ -6,3 +6,4 @@ schema
 out
 *.log*
 *.iml
+.DS_Store
