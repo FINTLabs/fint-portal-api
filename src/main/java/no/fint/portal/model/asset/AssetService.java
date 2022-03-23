@@ -1,5 +1,6 @@
 package no.fint.portal.model.asset;
 
+import no.fint.portal.exceptions.CreateEntityMismatchException;
 import no.fint.portal.ldap.LdapService;
 import no.fint.portal.model.adapter.Adapter;
 import no.fint.portal.model.client.Client;
@@ -8,6 +9,7 @@ import no.fint.portal.utilities.LdapConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +35,15 @@ public class AssetService {
         return ldapService.createEntry(asset);
     }
 
-    public boolean addAsset(Asset asset, Organisation organisation) {
-        return createAsset(asset, organisation, false);
+    public void addAssetWithPrimary(Asset asset, Organisation organisation) {
+        Asset primaryAsset = getPrimaryAsset(organisation);
+        asset.setAssetId(String.format("%s.%s", asset.getAssetId(), primaryAsset.getAssetId()));
+
+        if (isIllegalAssetID(asset.getAssetId()))
+            throw new IllegalArgumentException("The assetId contains illegal characters: " + asset.getAssetId());
+
+        if (!createAsset(asset, organisation, false))
+            throw new CreateEntityMismatchException(asset.getAssetId());
     }
 
     public boolean addPrimaryAsset(Asset asset, Organisation organisation) {
@@ -103,5 +112,11 @@ public class AssetService {
 
     public Asset getPrimaryAsset(Organisation organisation) {
         return getAssets(organisation).stream().filter(asset -> asset.isPrimaryAsset()).findFirst().orElse(new Asset());
+    }
+
+    private boolean isIllegalAssetID(String assetId) {
+        return StringUtils.isBlank(assetId)
+                || !StringUtils.isAsciiPrintable(assetId)
+                || StringUtils.containsAny(assetId, " !\"#$%&'()*+,/:;<=>?@[\\]^`{}|~");
     }
 }
