@@ -35,7 +35,7 @@ public class AssetService {
         return ldapService.createEntry(asset);
     }
 
-    public void addAssetWithPrimary(Asset asset, Organisation organisation) {
+    public void addSubAsset(Asset asset, Organisation organisation) {
         Asset primaryAsset = getPrimaryAsset(organisation);
         asset.setAssetId(String.format("%s.%s", asset.getAssetId(), primaryAsset.getAssetId()));
 
