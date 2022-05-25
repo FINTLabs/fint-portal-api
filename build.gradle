@@ -33,4 +33,4 @@ dependencies {
     testImplementation 'cglib:cglib-nodep:3.3.0'
 }
 
-apply from: 'https://raw.githubusercontent.com/FINTLabs/fint-buildscripts/master/reposilite.gradle'
+apply from: 'https://raw.githubusercontent.com/FINTLabs/fint-buildscripts/master/reposilite.ga.gradle'
