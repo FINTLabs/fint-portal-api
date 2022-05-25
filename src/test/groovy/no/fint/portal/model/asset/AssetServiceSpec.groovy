@@ -14,20 +14,19 @@ class AssetServiceSpec extends Specification {
     def setup() {
         ldapService = Mock(LdapService)
         assetService = new AssetService(ldapService: ldapService)
-
     }
 
-    def "Add Asset"() {
+    def "Add Sub Asset"() {
         given:
         def asset = ObjectFactory.newAsset()
         def organisation = ObjectFactory.newOrganisation()
         asset.assetId = "test.no"
+        ldapService.getAll(_,_) >> List.of()
 
         when:
-        def created = assetService.addAsset(asset, organisation)
+        assetService.addSubAsset(asset, organisation)
 
         then:
-        created
         asset.dn
         asset.name
         asset.organisation == organisation.dn
