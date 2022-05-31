@@ -1,5 +1,6 @@
 package no.fint.portal.model.asset
 
+import no.fint.portal.exceptions.CreateEntityMismatchException
 import no.fint.portal.ldap.LdapService
 import no.fint.portal.model.adapter.Adapter
 import no.fint.portal.model.client.Client
@@ -31,6 +32,35 @@ class AssetServiceSpec extends Specification {
         asset.name
         asset.organisation == organisation.dn
         1 * ldapService.createEntry(_ as Asset) >> true
+    }
+
+    def "Add Sub Asset with invalid char"() {
+        given:
+        def asset = ObjectFactory.newAsset()
+        def organisation = ObjectFactory.newOrganisation()
+        asset.assetId = "te%st.no"
+        ldapService.getAll(_,_) >> List.of()
+
+        when:
+        assetService.addSubAsset(asset, organisation)
+
+        then:
+        thrown IllegalArgumentException
+    }
+
+    def "Add Sub Asset fails"() {
+        given:
+        def asset = ObjectFactory.newAsset()
+        def organisation = ObjectFactory.newOrganisation()
+        asset.assetId = "test.no"
+        ldapService.getAll(_,_) >> List.of()
+        ldapService.createEntry(_) >> false
+
+        when:
+        assetService.addSubAsset(asset, organisation)
+
+        then:
+        thrown CreateEntityMismatchException
     }
 
     def "Update Asset"() {
