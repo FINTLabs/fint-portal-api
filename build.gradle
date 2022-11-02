@@ -16,20 +16,23 @@ repositories {
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter-web:2.4.3'
-    api 'org.springframework.ldap:spring-ldap-core:2.3.3.RELEASE'
-    api 'org.springframework.security.oauth:spring-security-oauth2:2.5.0.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
+    api 'org.springframework.ldap:spring-ldap-core:2.4.1'
+    api 'org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'org.yaml:snakeyaml:1.33'
 
-    implementation 'com.google.guava:guava:30.1-jre'
-    implementation 'org.apache.commons:commons-pool2:2.9.0'
-    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.apache.commons:commons-pool2:2.11.1'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.springframework.security:spring-security-core:5.7.3'
+    implementation 'org.springframework.security:spring-security-web:5.7.3'
 
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.3'
-    testImplementation 'org.spockframework:spock-spring:2.0-M4-groovy-2.5'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
+    testImplementation 'org.spockframework:spock-spring:2.3-groovy-2.5'
     testImplementation 'cglib:cglib-nodep:3.3.0'
 }
 
