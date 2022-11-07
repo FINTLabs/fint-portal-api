@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
     api 'org.springframework.ldap:spring-ldap-core:2.4.1'
     api 'org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
