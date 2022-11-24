@@ -11,6 +11,7 @@ import no.fint.portal.model.asset.AssetService;
 import no.fint.portal.model.client.Client;
 import no.fint.portal.model.client.ClientService;
 import no.fint.portal.model.component.Component;
+import no.fint.portal.model.component.ComponentLinkService;
 import no.fint.portal.model.component.ComponentService;
 import no.fint.portal.model.contact.Contact;
 import no.fint.portal.model.contact.ContactService;
@@ -49,7 +50,7 @@ public class OrganisationService {
     private ClientService clientService;
 
     @Autowired
-    private ComponentService componentService;
+    private ComponentLinkService componentLinkService;
 
     @Autowired
     private AssetService assetService;
@@ -220,12 +221,11 @@ public class OrganisationService {
         List<Client> clients = clientService.getClients(organisation.getName());
         List<Adapter> adapters = adapterService.getAdapters(organisation.getName());
 
-        clients.forEach(client -> componentService.unLinkClient(component, client));
-        adapters.forEach(adapter -> componentService.unLinkAdapter(component, adapter));
+        clients.forEach(client -> componentLinkService.unLinkClient(component, client));
+        adapters.forEach(adapter -> componentLinkService.unLinkAdapter(component, adapter));
 
         organisation.removeComponent(component.getDn());
         component.removeOrganisation(organisation.getDn());
-
 
         ldapService.updateEntry(organisation);
         ldapService.updateEntry(component);

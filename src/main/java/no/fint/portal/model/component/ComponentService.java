@@ -92,41 +92,6 @@ public class ComponentService {
         return null;
     }
 
-    public void linkClient(Component component, Client client) {
-
-        component.addClient(client.getDn());
-        client.addComponent(component.getDn());
-        ldapService.updateEntry(client);
-        ldapService.updateEntry(component);
-    }
-
-    public void unLinkClient(Component component, Client client) {
-
-        component.removeClient(client.getDn());
-        client.removeComponent(component.getDn());
-
-        ldapService.updateEntry(client);
-        ldapService.updateEntry(component);
-    }
-
-    public void linkAdapter(Component component, Adapter adapter) {
-
-        component.addAdapter(adapter.getDn());
-        adapter.addComponent(component.getDn());
-
-        ldapService.updateEntry(adapter);
-        ldapService.updateEntry(component);
-    }
-
-    public void unLinkAdapter(Component component, Adapter adapter) {
-
-        component.removeAdapter(adapter.getDn());
-        adapter.removeComponent(component.getDn());
-
-        ldapService.updateEntry(adapter);
-        ldapService.updateEntry(component);
-    }
-
     public List<Asset> getActiveAssetsForComponent(Component component) {
         return component
                 .getOrganisations()
