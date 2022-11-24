@@ -50,4 +50,40 @@ class ComponentLinkServiceSpec extends Specification {
         1 * ldapService.updateEntry(_ as Component)
     }
 
+    def "Add Adapter to Component"() {
+        given:
+        def adapter = ObjectFactory.newAdapter()
+        def component = ObjectFactory.newComponent()
+
+        adapter.setDn("name=a1")
+        component.setDn("ou=comp1")
+
+        when:
+        componentLinkService.linkAdapter(component, adapter)
+
+        then:
+        component.getAdapters().size() == 1
+        1 * ldapService.updateEntry(_ as Component)
+    }
+
+    def "Remove Adapter from Component"() {
+        given:
+        def component = ObjectFactory.newComponent()
+        def a1 = ObjectFactory.newAdapter()
+        def a2 = ObjectFactory.newAdapter()
+
+        a1.setDn("name=a1,o=fint")
+        a2.setDn("name=a2,o=fint")
+        component.addAdapter(a1.getDn())
+        component.addAdapter(a2.getDn())
+
+        when:
+        componentLinkService.unLinkAdapter(component, a1)
+
+        then:
+        component.getAdapters().size() == 1
+        component.getAdapters().get(0) == "name=a2,o=fint"
+        1 * ldapService.updateEntry(_ as Component)
+    }
+
 }
