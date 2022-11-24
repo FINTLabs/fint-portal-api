@@ -12,7 +12,6 @@ import no.fint.portal.model.client.Client;
 import no.fint.portal.model.client.ClientService;
 import no.fint.portal.model.component.Component;
 import no.fint.portal.model.component.ComponentLinkService;
-import no.fint.portal.model.component.ComponentService;
 import no.fint.portal.model.contact.Contact;
 import no.fint.portal.model.contact.ContactService;
 import no.fint.portal.utilities.LdapConstants;
@@ -93,11 +92,11 @@ public class OrganisationService {
     public Optional<Organisation> getOrganisation(String name) {
 
         Optional<Organisation> oranisation = Optional.ofNullable(ldapService.getEntry(
-                LdapNameBuilder.newInstance(organisationBase)
-                        .add(LdapConstants.OU, name)
-                        .build()
-                        .toString(),
-                Organisation.class
+                        LdapNameBuilder.newInstance(organisationBase)
+                                .add(LdapConstants.OU, name)
+                                .build()
+                                .toString(),
+                        Organisation.class
                 )
         );
 
