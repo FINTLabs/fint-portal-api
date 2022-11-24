@@ -33,6 +33,9 @@ public class ComponentService {
     @Autowired
     private AssetService assetService;
 
+    @Autowired
+    private ComponentLinkService componentLinkService;
+
     @Value("${fint.ldap.component-base}")
     private String componentBase;
 
@@ -102,5 +105,37 @@ public class ComponentService {
                 .map(assetService::getAssets)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * @deprecated in favor of using ComponentLinkService
+     */
+    @Deprecated
+    public void linkClient(Component component, Client client) {
+        componentLinkService.linkClient(component, client);
+    }
+
+    /**
+     * @deprecated in favor of using ComponentLinkService
+     */
+    @Deprecated
+    public void unLinkClient(Component component, Client client) {
+        componentLinkService.unLinkClient(component, client);
+    }
+
+    /**
+     * @deprecated in favor of using ComponentLinkService
+     */
+    @Deprecated
+    public void linkAdapter(Component component, Adapter adapter) {
+        componentLinkService.linkAdapter(component, adapter);
+    }
+
+    /**
+     * @deprecated in favor of using ComponentLinkService
+     */
+    @Deprecated
+    public void unLinkAdapter(Component component, Adapter adapter) {
+        componentLinkService.unLinkAdapter(component, adapter);
     }
 }
