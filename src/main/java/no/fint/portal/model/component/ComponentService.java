@@ -33,6 +33,9 @@ public class ComponentService {
     @Autowired
     private AssetService assetService;
 
+    @Autowired
+    private ComponentLinkService componentLinkService;
+
     @Value("${fint.ldap.component-base}")
     private String componentBase;
 
@@ -92,41 +95,6 @@ public class ComponentService {
         return null;
     }
 
-    public void linkClient(Component component, Client client) {
-
-        component.addClient(client.getDn());
-        client.addComponent(component.getDn());
-        ldapService.updateEntry(client);
-        ldapService.updateEntry(component);
-    }
-
-    public void unLinkClient(Component component, Client client) {
-
-        component.removeClient(client.getDn());
-        client.removeComponent(component.getDn());
-
-        ldapService.updateEntry(client);
-        ldapService.updateEntry(component);
-    }
-
-    public void linkAdapter(Component component, Adapter adapter) {
-
-        component.addAdapter(adapter.getDn());
-        adapter.addComponent(component.getDn());
-
-        ldapService.updateEntry(adapter);
-        ldapService.updateEntry(component);
-    }
-
-    public void unLinkAdapter(Component component, Adapter adapter) {
-
-        component.removeAdapter(adapter.getDn());
-        adapter.removeComponent(component.getDn());
-
-        ldapService.updateEntry(adapter);
-        ldapService.updateEntry(component);
-    }
-
     public List<Asset> getActiveAssetsForComponent(Component component) {
         return component
                 .getOrganisations()
@@ -137,5 +105,37 @@ public class ComponentService {
                 .map(assetService::getAssets)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * @deprecated use {@link ComponentLinkService} to call this method instead
+     */
+    @Deprecated
+    public void linkClient(Component component, Client client) {
+        componentLinkService.linkClient(component, client);
+    }
+
+    /**
+     * @deprecated use {@link ComponentLinkService} to call this method instead
+     */
+    @Deprecated
+    public void unLinkClient(Component component, Client client) {
+        componentLinkService.unLinkClient(component, client);
+    }
+
+    /**
+     * @deprecated use {@link ComponentLinkService} to call this method instead
+     */
+    @Deprecated
+    public void linkAdapter(Component component, Adapter adapter) {
+        componentLinkService.linkAdapter(component, adapter);
+    }
+
+    /**
+     * @deprecated use {@link ComponentLinkService} to call this method instead
+     */
+    @Deprecated
+    public void unLinkAdapter(Component component, Adapter adapter) {
+        componentLinkService.unLinkAdapter(component, adapter);
     }
 }
