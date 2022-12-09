@@ -108,7 +108,7 @@ public class ComponentService {
     }
 
     /**
-     * @deprecated in favor of using ComponentLinkService
+     * @deprecated use {@link ComponentLinkService} to call this method instead
      */
     @Deprecated
     public void linkClient(Component component, Client client) {
@@ -116,7 +116,7 @@ public class ComponentService {
     }
 
     /**
-     * @deprecated in favor of using ComponentLinkService
+     * @deprecated use {@link ComponentLinkService} to call this method instead
      */
     @Deprecated
     public void unLinkClient(Component component, Client client) {
@@ -124,7 +124,7 @@ public class ComponentService {
     }
 
     /**
-     * @deprecated in favor of using ComponentLinkService
+     * @deprecated use {@link ComponentLinkService} to call this method instead
      */
     @Deprecated
     public void linkAdapter(Component component, Adapter adapter) {
@@ -132,7 +132,7 @@ public class ComponentService {
     }
 
     /**
-     * @deprecated in favor of using ComponentLinkService
+     * @deprecated use {@link ComponentLinkService} to call this method instead
      */
     @Deprecated
     public void unLinkAdapter(Component component, Adapter adapter) {
