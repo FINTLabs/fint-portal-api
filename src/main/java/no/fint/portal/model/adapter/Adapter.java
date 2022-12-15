@@ -1,44 +1,42 @@
 package no.fint.portal.model.adapter;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.ToString;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
-import org.springframework.ldap.odm.annotations.Transient;
 import org.springframework.ldap.support.LdapNameBuilder;
 
 import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel
+@Schema
 @ToString(exclude = {"password"})
 @Entry(objectClasses = {"fintAdapter", "inetOrgPerson", "organizationalPerson", "person", "top"})
 public final class Adapter implements BasicLdapEntry {
 
-    @ApiModelProperty(value = "DN of the adapter. This is automatically set.")
+    @Schema(defaultValue = "DN of the adapter. This is automatically set.")
     @Id
     private Name dn;
 
-    @ApiModelProperty(value = "Username for the adapter. This is automatically set.")
+    @Schema(defaultValue = "Username for the adapter. This is automatically set.")
     @Attribute(name = "cn")
     private String name;
 
-    @ApiModelProperty(value = "Short description of the adapter")
+    @Schema(defaultValue = "Short description of the adapter")
     @Attribute(name = "sn")
     private String shortDescription;
 
-    @ApiModelProperty(value = "A note of the adapter.")
+    @Schema(defaultValue = "A note of the adapter.")
     @Attribute(name = "description")
     private String note;
 
     @Attribute(name = "userPassword")
     private String password;
 
-    @ApiModelProperty(value = "OAuth client id")
+    @Schema(defaultValue = "OAuth client id")
     @Attribute(name = "fintOAuthClientId")
     private String clientId;
 

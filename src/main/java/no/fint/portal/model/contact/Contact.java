@@ -1,7 +1,6 @@
 package no.fint.portal.model.contact;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
@@ -13,48 +12,48 @@ import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel
+@Schema
 @Data
 @Entry(objectClasses = {"inetOrgPerson", "organizationalPerson", "person", "top", "fintContact"})
 public final class Contact implements BasicLdapEntry {
 
-    @ApiModelProperty(value = "DN of the contact. This is automatically set.")
+    @Schema(defaultValue = "DN of the contact. This is automatically set.")
     @Id
     private Name dn;
 
-    @ApiModelProperty(value = "National Idenitification Number (NIN). This would be fodselsnummer (11 digits)")
+    @Schema(defaultValue = "National Idenitification Number (NIN). This would be fodselsnummer (11 digits)")
     @Attribute(name = "cn")
     private String nin;
 
-    @ApiModelProperty(value = "First name of the contact.")
+    @Schema(defaultValue = "First name of the contact.")
     @Attribute(name = "givenName")
     private String firstName;
 
-    @ApiModelProperty(value = "Last name of the contact.")
+    @Schema(defaultValue = "Last name of the contact.")
     @Attribute(name = "sn")
     private String lastName;
 
-    @ApiModelProperty(value = "Internet email address for the contact.")
+    @Schema(defaultValue = "Internet email address for the contact.")
     @Attribute(name = "mail")
     private String mail;
 
-    @ApiModelProperty(value = "Mobile number of the contact. Should include landcode.")
+    @Schema(defaultValue = "Mobile number of the contact. Should include landcode.")
     @Attribute(name = "mobile")
     private String mobile;
 
-    @ApiModelProperty(value = "Indicates if the contact is the primary technical contact for the organisation.")
+    @Schema(defaultValue = "Indicates if the contact is the primary technical contact for the organisation.")
     @Attribute(name = "fintContactTechnical")
     private List<String> technical;
 
-    @ApiModelProperty(value = "Indicates if the contact is the primary legal contact for the organisation.")
+    @Schema(defaultValue = "Indicates if the contact is the primary legal contact for the organisation.")
     @Attribute(name = "fintContactLegal")
     private List<String> legal;
 
-    @ApiModelProperty(value = "Contacts id in the support system.")
+    @Schema(defaultValue = "Contacts id in the support system.")
     @Attribute(name = "fintContactSupportId")
     private String supportId;
 
-    @ApiModelProperty(value = "Roles for the contact.")
+    @Schema(defaultValue = "Roles for the contact.")
     @Attribute(name = "fintContactRoles")
     private List<String> roles;
 

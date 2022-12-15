@@ -1,7 +1,6 @@
 package no.fint.portal.model.access;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
@@ -12,7 +11,7 @@ import org.springframework.ldap.support.LdapNameBuilder;
 import javax.naming.Name;
 import java.util.List;
 
-@ApiModel
+@Schema
 @Data
 @Entry(objectClasses = {"organizationalUnit", "top", "fintAccess"})
 public final class AccessPackage implements BasicLdapEntry {
@@ -22,7 +21,7 @@ public final class AccessPackage implements BasicLdapEntry {
     @Attribute(name = "fintSelf")
     private Name self;
 
-    @ApiModelProperty(value = "Technical name of the access package.")
+    @Schema(defaultValue = "Technical name of the access package.")
     @Attribute(name = "ou")
     private String name;
 
