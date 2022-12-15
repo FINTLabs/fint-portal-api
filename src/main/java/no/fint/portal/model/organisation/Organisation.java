@@ -1,7 +1,6 @@
 package no.fint.portal.model.organisation;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
@@ -16,7 +15,7 @@ import java.util.List;
 
 
 @SuppressWarnings("ALL")
-@ApiModel
+@Schema
 @Data
 @Entry(objectClasses = {"organizationalUnit", "top", "fintOrganisation"})
 public final class Organisation implements BasicLdapEntry {
@@ -24,19 +23,15 @@ public final class Organisation implements BasicLdapEntry {
     @Id
     private Name dn;
 
-    @ApiModelProperty(
-            value = "Unique identifier for the organisation (UUID). This is automatically generated and should not be set."
-    )
+    @Schema(defaultValue = "Unique identifier for the organisation (UUID). This is automatically generated and should not be set.")
     @Attribute(name = "ou")
     private String name;
 
-    @ApiModelProperty(value = "The organisation number from Enhetsregisteret (https://w2.brreg.no/enhet/sok/index.jsp)")
+    @Schema(defaultValue = "The organisation number from Enhetsregisteret (https://w2.brreg.no/enhet/sok/index.jsp)")
     @Attribute(name = "fintOrganisationNumber")
     private String orgNumber;
 
-    @ApiModelProperty(
-            value = "The official name of the organisation. See Enhetsregisteret (https://w2.brreg.no/enhet/sok/index.jsp)"
-    )
+    @Schema(defaultValue = "The official name of the organisation. See Enhetsregisteret (https://w2.brreg.no/enhet/sok/index.jsp)")
     @Attribute(name = "fintOrganisationDisplayName")
     private String displayName;
 
@@ -52,8 +47,8 @@ public final class Organisation implements BasicLdapEntry {
     @Attribute(name = "fintOrganisationK8sSize")
     private String k8sSize;
 
-    @ApiModelProperty(
-            value = "Indicates if the organistion is a customer. Typically if it's a customer k8s deployments should be created."
+    @Schema(
+            defaultValue = "Indicates if the organistion is a customer. Typically if it's a customer k8s deployments should be created."
     )
     @Attribute(name = "fintOrganisationCustomer")
     private boolean customer;

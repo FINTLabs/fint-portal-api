@@ -1,7 +1,6 @@
 package no.fint.portal.model.client;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.ToString;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
@@ -13,39 +12,39 @@ import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel
+@Schema
 @ToString(exclude = {"password"})
 @Entry(objectClasses = {"fintClient", "inetOrgPerson", "organizationalPerson", "person", "top"})
 public final class Client implements BasicLdapEntry {
 
-    @ApiModelProperty(value = "DN of the client. This is automatically set.")
+    @Schema(defaultValue = "DN of the client. This is automatically set.")
     @Id
     private Name dn;
 
-    @ApiModelProperty(value = "Username for the client.")
+    @Schema(defaultValue = "Username for the client.")
     @Attribute(name = "cn")
     private String name;
 
-    @ApiModelProperty(value = "Short description of the client")
+    @Schema(defaultValue = "Short description of the client")
     @Attribute(name = "sn")
     private String shortDescription;
 
-    @ApiModelProperty(value = "OrgId of the organisation the client is connected to. This is automatically set.")
+    @Schema(defaultValue = "OrgId of the organisation the client is connected to. This is automatically set.")
     @Attribute(name = "fintClientAssetId")
     private String assetId;
 
-    @ApiModelProperty(value = "DN of the organisation the client is connected to. This is automatically set.")
+    @Schema(defaultValue = "DN of the organisation the client is connected to. This is automatically set.")
     @Attribute(name = "fintClientAsset")
     private String asset;
 
-    @ApiModelProperty(value = "A note of the client.")
+    @Schema(defaultValue = "A note of the client.")
     @Attribute(name = "description")
     private String note;
 
     @Attribute(name = "userPassword")
     private String password;
 
-    @ApiModelProperty(value = "OAuth client id")
+    @Schema(defaultValue = "OAuth client id")
     @Attribute(name = "fintOAuthClientId")
     private String clientId;
 

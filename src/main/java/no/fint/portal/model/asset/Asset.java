@@ -1,7 +1,6 @@
 package no.fint.portal.model.asset;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import no.fint.portal.ldap.BasicLdapEntry;
 import org.springframework.ldap.odm.annotations.Attribute;
@@ -13,7 +12,7 @@ import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel
+@Schema
 @Data
 @Entry(objectClasses = {"organizationalUnit", "top", "fintAsset"})
 public final class Asset implements BasicLdapEntry {
@@ -21,11 +20,11 @@ public final class Asset implements BasicLdapEntry {
     @Id
     private Name dn;
 
-    @ApiModelProperty(value = "Technical name of the component.")
+    @Schema(defaultValue = "Technical name of the component.")
     @Attribute(name = "ou")
     private String name;
 
-    @ApiModelProperty(value = "A description of what the component does.")
+    @Schema(defaultValue = "A description of what the component does.")
     @Attribute(name = "description")
     private String description;
 
