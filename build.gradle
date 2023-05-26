@@ -1,10 +1,10 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.5' apply false
+    id 'org.springframework.boot' version '2.7.11' apply false
     id 'io.spring.dependency-management' version '1.1.0'
     id 'groovy'
     id 'maven-publish'
     id 'java-library'
-    id 'com.github.ben-manes.versions' version '0.43.0'
+    id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
 group = 'no.fintlabs'
@@ -22,18 +22,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
     api 'org.springframework.ldap:spring-ldap-core:2.4.1'
     api 'org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
     implementation 'org.yaml:snakeyaml:1.33'
 
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.apache.commons:commons-pool2:2.11.1'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'org.springframework.security:spring-security-core:5.7.5'
-    implementation 'org.springframework.security:spring-security-web:5.7.5'
+    implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.security:spring-security-web'
 
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.5'
     testImplementation 'org.spockframework:spock-spring:2.3-groovy-4.0'
