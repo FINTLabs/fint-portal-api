@@ -13,14 +13,10 @@ import java.util.List;
 @Service
 public class LdapService {
 
-    private final SearchControls searchControls;
-
-    @Autowired
     private LdapTemplate ldapTemplate;
 
-    public LdapService() {
-        searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    public LdapService(LdapTemplate ldapTemplate) {
+        this.ldapTemplate = ldapTemplate;
     }
 
     public boolean createEntry(BasicLdapEntry basicLdapEntry) {
@@ -44,7 +40,7 @@ public class LdapService {
             List<T> ldapEntries = ldapTemplate.find(
                     LdapNameBuilder.newInstance(base).build(),
                     new EqualsFilter(LdapUniqueNameUtility.getUniqueNameAttribute(type), name),
-                    searchControls, type);
+                    searchControls(), type);
 
             if (ldapEntries != null && ldapEntries.size() == 1) {
                 return ldapEntries.get(0);
@@ -74,7 +70,7 @@ public class LdapService {
 
     public <T> List<T> getAll(String base, Class<T> type) {
         if (entryExists(base)) {
-            return ldapTemplate.findAll(LdapNameBuilder.newInstance(base).build(), searchControls, type);
+            return ldapTemplate.findAll(LdapNameBuilder.newInstance(base).build(), searchControls(), type);
         }
         return null;
     }
@@ -91,4 +87,11 @@ public class LdapService {
         ldapTemplate.delete(basicLdapEntry);
     }
 
+    private SearchControls searchControls() {
+        SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setReturningAttributes(null);
+
+        return searchControls;
+    }
 }
