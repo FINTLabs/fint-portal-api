@@ -46,10 +46,11 @@ public final class Adapter implements BasicLdapEntry {
     @Attribute(name = "fintAdapterAssets")
     private List<String> assets;
 
-
     @Attribute(name = "fintAdapterAssetIds")
     private List<String> assetIds;
 
+    @Attribute(name = "fintAdapterManaged")
+    private boolean managed;
 
     public Adapter() {
         components = new ArrayList<>();
@@ -155,4 +156,11 @@ public final class Adapter implements BasicLdapEntry {
         return assets;
     }
 
+    public boolean isManaged() {
+        return managed;
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
 }

@@ -54,6 +54,9 @@ public final class Client implements BasicLdapEntry {
     @Attribute(name = "fintClientAccessPackages")
     private List<String> accessPackages;
 
+    @Attribute(name = "fintClientManaged")
+    private boolean managed;
+
     public Client() {
         components = new ArrayList<>();
         accessPackages = new ArrayList<>();
@@ -151,5 +154,13 @@ public final class Client implements BasicLdapEntry {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    public boolean isManaged() {
+        return managed;
     }
 }
