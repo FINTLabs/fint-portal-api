@@ -79,9 +79,9 @@ public class ClientService {
         ldapService.deleteEntry(client);
     }
 
-    public void resetClientPassword(Client client, String newPassword) {
+    public boolean resetClientPassword(Client client, String newPassword) {
         client.setSecret(newPassword);
-        ldapService.updateEntry(client);
+        return ldapService.updateEntry(client);
     }
 
 
