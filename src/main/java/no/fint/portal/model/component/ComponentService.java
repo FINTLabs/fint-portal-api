@@ -58,22 +58,6 @@ public class ComponentService {
         return ldapService.getAll(componentBase, Component.class);
     }
 
-    // TODO: 17.01.2017 Refactor this method and add tests
-    // TODO: 14.12.2017 Remove?
-    /*
-    public List<Component> getComponentsByOrgUUID(String uuid) {
-        List<Component> components = getComponents();
-        List<Component> orgComponents = new ArrayList<>();
-        components.forEach(component -> {
-            String dn = component.getDn();
-            String orgDn = String.format("ou=%s,%s", uuid, dn);
-            if (ldapService.entryExists(orgDn)) {
-                orgComponents.add(component);
-            }
-        });
-        return orgComponents;
-    }
-    */
     public Optional<Component> getComponentByName(String name) {
         return getComponetByDn(getComponentDnByName(name));
     }
