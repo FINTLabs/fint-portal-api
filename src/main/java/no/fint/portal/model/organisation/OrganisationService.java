@@ -168,7 +168,7 @@ public class OrganisationService {
 
     public void linkLegalContact(Organisation organisation, Contact contact) {
         String previousLegalContactDn = organisation.getLegalContact();
-        if (!StringUtils.isEmpty(previousLegalContactDn)) {
+        if (StringUtils.hasLength(previousLegalContactDn)) {
             contactService.getContactByDn(previousLegalContactDn).ifPresent(previousLegalContact -> {
                 previousLegalContact.removeOrganisationLegalContact(organisation.getDn());
                 contactService.updateContact(previousLegalContact);

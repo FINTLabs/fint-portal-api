@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -132,7 +133,14 @@ public class NamOAuthClientService {
         form.add("client_secret", clientSecret);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
-        Map<String, Object> tokenResponse = tokenRestTemplate.postForObject(tokenUrl, request, Map.class);
+        ResponseEntity<Map<String, Object>> response = tokenRestTemplate.exchange(
+                tokenUrl,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        Map<String, Object> tokenResponse = response.getBody();
 
         if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
             throw new IllegalStateException("Token response missing access_token");
