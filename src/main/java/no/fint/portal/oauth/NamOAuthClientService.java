@@ -7,15 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Collections;
+import jakarta.annotation.PostConstruct;
+import java.time.Instant;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,20 +37,18 @@ public class NamOAuthClientService {
     private String clientSecret;
 
     private RestTemplate restTemplate;
+    private RestTemplate tokenRestTemplate;
+    private String accessToken;
+    private Instant accessTokenExpiresAt;
 
     @PostConstruct
     private void init() {
-
-        ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();
-        resourceDetails.setUsername(username);
-        resourceDetails.setPassword(password);
-        resourceDetails.setAccessTokenUri(String.format(NamOAuthConstants.ACCESS_TOKEN_URL_TEMPLATE, idpHostname));
-        resourceDetails.setClientId(clientId);
-        resourceDetails.setClientSecret(clientSecret);
-        resourceDetails.setGrantType(NamOAuthConstants.PASSWORD_GRANT_TYPE);
-        resourceDetails.setScope(Collections.singletonList(NamOAuthConstants.SCOPE));
-
-        restTemplate = new OAuth2RestTemplate(resourceDetails);
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+        }
+        if (tokenRestTemplate == null) {
+            tokenRestTemplate = new RestTemplate();
+        }
     }
 
     public OAuthClient addOAuthClient(String name) {
@@ -64,6 +64,7 @@ public class NamOAuthClientService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(getAccessToken());
 
         HttpEntity<String> request = new HttpEntity<>(jsonOAuthClient, headers);
 
@@ -81,7 +82,10 @@ public class NamOAuthClientService {
     public void removeOAuthClient(String clientId) {
         log.info("Deleting client {}...", clientId);
         try {
-            restTemplate.delete(NamOAuthConstants.CLIENT_URL_TEMPLATE, idpHostname, clientId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(getAccessToken());
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            restTemplate.exchange(NamOAuthConstants.CLIENT_URL_TEMPLATE, HttpMethod.DELETE, request, Void.class, idpHostname, clientId);
         } catch (Exception e) {
             log.error("Unable to delete client {}", clientId, e);
             throw e;
@@ -91,10 +95,54 @@ public class NamOAuthClientService {
     public OAuthClient getOAuthClient(String clientId) {
         log.info("Fetching client {}...", clientId);
         try {
-            return restTemplate.getForObject(NamOAuthConstants.CLIENT_URL_TEMPLATE, OAuthClient.class, idpHostname, clientId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(getAccessToken());
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            ResponseEntity<OAuthClient> response = restTemplate.exchange(
+                    NamOAuthConstants.CLIENT_URL_TEMPLATE,
+                    HttpMethod.GET,
+                    request,
+                    OAuthClient.class,
+                    idpHostname,
+                    clientId
+            );
+            return response.getBody();
         } catch (Exception e) {
             log.error("Unable to get client {}", clientId, e);
             throw e;
         }
+    }
+
+    private synchronized String getAccessToken() {
+        Instant now = Instant.now();
+        if (accessToken != null && accessTokenExpiresAt != null && accessTokenExpiresAt.isAfter(now.plusSeconds(60))) {
+            return accessToken;
+        }
+
+        String tokenUrl = String.format(NamOAuthConstants.ACCESS_TOKEN_URL_TEMPLATE, idpHostname);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("grant_type", NamOAuthConstants.PASSWORD_GRANT_TYPE);
+        form.add("username", username);
+        form.add("password", password);
+        form.add("scope", NamOAuthConstants.SCOPE);
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
+        Map<String, Object> tokenResponse = tokenRestTemplate.postForObject(tokenUrl, request, Map.class);
+
+        if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
+            throw new IllegalStateException("Token response missing access_token");
+        }
+
+        accessToken = tokenResponse.get("access_token").toString();
+        Object expiresIn = tokenResponse.get("expires_in");
+        long ttlSeconds = expiresIn instanceof Number ? ((Number) expiresIn).longValue() : 300L;
+        accessTokenExpiresAt = now.plusSeconds(ttlSeconds);
+
+        return accessToken;
     }
 }
