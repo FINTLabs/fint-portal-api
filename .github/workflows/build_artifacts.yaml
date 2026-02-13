@@ -23,13 +23,8 @@ jobs:
           java-version: '25'
           cache: 'gradle'
 
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v2
-
-      - name: Gradle Setup
-        uses: gradle/gradle-build-action@v2.4.2
-        with:
-          gradle-version: wrapper
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Gradle build
         run: |
