@@ -5,17 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Collections;
+import java.time.Instant;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -34,23 +36,28 @@ public class NamOAuthClientService {
     @Value("${fint.nam.oauth.clientSecret}")
     private String clientSecret;
 
-    private RestTemplate restTemplate;
+    private String accessToken;
+    private Instant accessTokenExpiresAt;
+    private final RestTemplate restTemplate;
+    private final RestTemplate tokenRestTemplate;
 
-    @PostConstruct
-    private void init() {
-
-        ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();
-        resourceDetails.setUsername(username);
-        resourceDetails.setPassword(password);
-        resourceDetails.setAccessTokenUri(String.format(NamOAuthConstants.ACCESS_TOKEN_URL_TEMPLATE, idpHostname));
-        resourceDetails.setClientId(clientId);
-        resourceDetails.setClientSecret(clientSecret);
-        resourceDetails.setGrantType(NamOAuthConstants.PASSWORD_GRANT_TYPE);
-        resourceDetails.setScope(Collections.singletonList(NamOAuthConstants.SCOPE));
-
-        restTemplate = new OAuth2RestTemplate(resourceDetails);
+    public NamOAuthClientService() {
+        this.restTemplate = new RestTemplate();
+        this.tokenRestTemplate = new RestTemplate();
     }
 
+    // Constructor for testing purposes
+    protected NamOAuthClientService(RestTemplate restTemplate, RestTemplate tokenRestTemplate) {
+        this.restTemplate = restTemplate;
+        this.tokenRestTemplate = tokenRestTemplate;
+    }
+
+    /**
+     * Creates a new OAuth client in the IDP.
+     *
+     * @param name The name of the client to create.
+     * @return The created OAuthClient object.
+     */
     public OAuthClient addOAuthClient(String name) {
         log.info("Adding client {}...", name);
         OAuthClient oAuthClient = new OAuthClient(name);
@@ -64,6 +71,7 @@ public class NamOAuthClientService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(getAccessToken());
 
         HttpEntity<String> request = new HttpEntity<>(jsonOAuthClient, headers);
 
@@ -78,23 +86,99 @@ public class NamOAuthClientService {
         }
     }
 
+    /**
+     * Deletes an OAuth client from the IDP.
+     *
+     * @param clientId The ID of the client to delete.
+     */
     public void removeOAuthClient(String clientId) {
         log.info("Deleting client {}...", clientId);
         try {
-            restTemplate.delete(NamOAuthConstants.CLIENT_URL_TEMPLATE, idpHostname, clientId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(getAccessToken());
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            restTemplate.exchange(NamOAuthConstants.CLIENT_URL_TEMPLATE, HttpMethod.DELETE, request, Void.class, idpHostname, clientId);
         } catch (Exception e) {
             log.error("Unable to delete client {}", clientId, e);
             throw e;
         }
     }
 
+    /**
+     * Retrieves an OAuth client from the IDP.
+     *
+     * @param clientId The ID of the client to retrieve.
+     * @return The retrieved OAuthClient object.
+     */
     public OAuthClient getOAuthClient(String clientId) {
         log.info("Fetching client {}...", clientId);
         try {
-            return restTemplate.getForObject(NamOAuthConstants.CLIENT_URL_TEMPLATE, OAuthClient.class, idpHostname, clientId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(getAccessToken());
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            ResponseEntity<OAuthClient> response = restTemplate.exchange(
+                    NamOAuthConstants.CLIENT_URL_TEMPLATE,
+                    HttpMethod.GET,
+                    request,
+                    OAuthClient.class,
+                    idpHostname,
+                    clientId
+            );
+            return response.getBody();
         } catch (Exception e) {
             log.error("Unable to get client {}", clientId, e);
             throw e;
         }
+    }
+
+    /**
+     * Retrieves a valid access token for the service.
+     * Refreshes the token if it is null or expiring within 60 seconds.
+     * Synchronized as multiple threads may call getOAuthClient simultaneously,
+     * and we need to ensure the threads do not create new access tokens at the same time.
+     * Due to the check and return at the start of the function, this method is likely not a bottleneck.
+     * TODO: Replace this with an interceptor.
+     * Example here: https://github.com/FINTLabs/flais-idp-gateway/blob/main/src/main/kotlin/no/fintlabs/flais/security/oauth2/client/OAuth2ClientInterceptor.kt
+     *
+     * @return The access token string.
+     */
+    private synchronized String getAccessToken() {
+        Instant now = Instant.now();
+        if (accessToken != null && accessTokenExpiresAt != null && accessTokenExpiresAt.isAfter(now.plusSeconds(60))) {
+            return accessToken;
+        }
+
+        String tokenUrl = String.format(NamOAuthConstants.ACCESS_TOKEN_URL_TEMPLATE, idpHostname);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("grant_type", NamOAuthConstants.PASSWORD_GRANT_TYPE);
+        form.add("username", username);
+        form.add("password", password);
+        form.add("scope", NamOAuthConstants.SCOPE);
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(form, headers);
+        ResponseEntity<Map<String, Object>> response = tokenRestTemplate.exchange(
+                tokenUrl,
+                HttpMethod.POST,
+                request,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        Map<String, Object> tokenResponse = response.getBody();
+
+        if (tokenResponse == null || !tokenResponse.containsKey("access_token")) {
+            throw new IllegalStateException("Token response missing access_token");
+        }
+
+        accessToken = tokenResponse.get("access_token").toString();
+        Object expiresIn = tokenResponse.get("expires_in");
+        long ttlSeconds = expiresIn instanceof Number ? ((Number) expiresIn).longValue() : 300L;
+        accessTokenExpiresAt = now.plusSeconds(ttlSeconds);
+
+        return accessToken;
     }
 }
