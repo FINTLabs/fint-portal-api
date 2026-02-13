@@ -59,6 +59,9 @@ public final class Component implements BasicLdapEntry {
     @Attribute(name = "fintComponentIsInBeta")
     private boolean isInBeta;
 
+    @Attribute(name = "fintComponentIsInAlpha")
+    private boolean isInAlpha;
+
     @Attribute(name = "fintComponentIsInPlayWithFint")
     private boolean isInPlayWithFint;
 

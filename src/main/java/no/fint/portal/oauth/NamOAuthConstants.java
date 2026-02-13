@@ -14,5 +14,7 @@ public class NamOAuthConstants {
 
     public static final String DEFAULT_REDIRECT_URI = "https://dummy.com";
     public static final String RESPONSE_TYPE = "token";
-    public static final List<String> CORS_DOMAINS = List.of("beta.felleskomponent.no", "api.felleskomponent.no");
+    public static final List<String> CORS_DOMAINS = List.of(
+            "alpha.felleskomponent.no", "beta.felleskomponent.no", "api.felleskomponent.no"
+    );
 }
