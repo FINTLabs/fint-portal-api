@@ -42,6 +42,9 @@ public class NamOAuthClientService {
     private String accessToken;
     private Instant accessTokenExpiresAt;
 
+    /**
+     * Initializes the RestTemplates if they are null.
+     */
     @PostConstruct
     private void init() {
         if (restTemplate == null) {
@@ -52,6 +55,12 @@ public class NamOAuthClientService {
         }
     }
 
+    /**
+     * Creates a new OAuth client in the IDP.
+     *
+     * @param name The name of the client to create.
+     * @return The created OAuthClient object.
+     */
     public OAuthClient addOAuthClient(String name) {
         log.info("Adding client {}...", name);
         OAuthClient oAuthClient = new OAuthClient(name);
@@ -80,6 +89,11 @@ public class NamOAuthClientService {
         }
     }
 
+    /**
+     * Deletes an OAuth client from the IDP.
+     *
+     * @param clientId The ID of the client to delete.
+     */
     public void removeOAuthClient(String clientId) {
         log.info("Deleting client {}...", clientId);
         try {
@@ -93,6 +107,12 @@ public class NamOAuthClientService {
         }
     }
 
+    /**
+     * Retrieves an OAuth client from the IDP.
+     *
+     * @param clientId The ID of the client to retrieve.
+     * @return The retrieved OAuthClient object.
+     */
     public OAuthClient getOAuthClient(String clientId) {
         log.info("Fetching client {}...", clientId);
         try {
@@ -114,6 +134,17 @@ public class NamOAuthClientService {
         }
     }
 
+    /**
+     * Retrieves a valid access token for the service.
+     * Refreshes the token if it is null or expiring within 60 seconds.
+     * Synchronized as multiple threads may call getOAuthClient simultaneously,
+     * and we need to ensure the threads do not create new access tokens at the same time.
+     * Due to the check and return at the start of the function, this method is likely not a bottleneck.
+     * TODO: Replace this with an interceptor.
+     * Example here: https://github.com/FINTLabs/flais-idp-gateway/blob/main/src/main/kotlin/no/fintlabs/flais/security/oauth2/client/OAuth2ClientInterceptor.kt
+     *
+     * @return The access token string.
+     */
     private synchronized String getAccessToken() {
         Instant now = Instant.now();
         if (accessToken != null && accessTokenExpiresAt != null && accessTokenExpiresAt.isAfter(now.plusSeconds(60))) {
