@@ -16,7 +16,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.Map;
 
@@ -37,22 +36,20 @@ public class NamOAuthClientService {
     @Value("${fint.nam.oauth.clientSecret}")
     private String clientSecret;
 
-    private RestTemplate restTemplate;
-    private RestTemplate tokenRestTemplate;
     private String accessToken;
     private Instant accessTokenExpiresAt;
+    private final RestTemplate restTemplate;
+    private final RestTemplate tokenRestTemplate;
 
-    /**
-     * Initializes the RestTemplates if they are null.
-     */
-    @PostConstruct
-    private void init() {
-        if (restTemplate == null) {
-            restTemplate = new RestTemplate();
-        }
-        if (tokenRestTemplate == null) {
-            tokenRestTemplate = new RestTemplate();
-        }
+    public NamOAuthClientService() {
+        this.restTemplate = new RestTemplate();
+        this.tokenRestTemplate = new RestTemplate();
+    }
+
+    // Constructor for testing purposes
+    protected NamOAuthClientService(RestTemplate restTemplate, RestTemplate tokenRestTemplate) {
+        this.restTemplate = restTemplate;
+        this.tokenRestTemplate = tokenRestTemplate;
     }
 
     /**

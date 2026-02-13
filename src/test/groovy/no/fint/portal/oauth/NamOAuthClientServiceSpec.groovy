@@ -19,16 +19,15 @@ class NamOAuthClientServiceSpec extends Specification {
         restTemplate = Mock(RestTemplate)
         tokenRestTemplate = Mock(RestTemplate)
         mapper = new ObjectMapper()
-        namOAuthClientService = new NamOAuthClientService(
-                restTemplate: restTemplate,
-                tokenRestTemplate: tokenRestTemplate,
-                mapper: mapper,
-                username: "user",
-                password: "pass",
-                idpHostname: "idp",
-                clientId: "client",
-                clientSecret: "secret"
-        )
+        namOAuthClientService = new NamOAuthClientService(restTemplate, tokenRestTemplate)
+
+        // Set the remaining properties
+        namOAuthClientService.mapper = mapper
+        namOAuthClientService.username = "user"
+        namOAuthClientService.password = "pass"
+        namOAuthClientService.idpHostname = "idp"
+        namOAuthClientService.clientId = "client"
+        namOAuthClientService.clientSecret = "secret"
     }
 
     def "Add OAuth Client"() {
