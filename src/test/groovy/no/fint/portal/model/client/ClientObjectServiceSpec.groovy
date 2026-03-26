@@ -42,45 +42,45 @@ class ClientObjectServiceSpec extends Specification {
         dn.toString().contains("orgUuid")
     }
 
-    def "ApiVersion is null by default"() {
+    def "ModelVersion is null by default"() {
         when:
         def client = new Client()
 
         then:
-        client.getApiVersion() == null
+        client.getModelVersion() == null
     }
 
-    def "Set and get ApiVersion V3"() {
+    def "Set and get ModelVersion V3"() {
         given:
         def client = new Client()
 
         when:
-        client.setApiVersion(ApiVersion.V3)
+        client.setModelVersion(ModelVersion.V3)
 
         then:
-        client.getApiVersion() == ApiVersion.V3
+        client.getModelVersion() == ModelVersion.V3
     }
 
-    def "Set and get ApiVersion V4"() {
+    def "Set and get ModelVersion V4"() {
         given:
         def client = new Client()
 
         when:
-        client.setApiVersion(ApiVersion.V4)
+        client.setModelVersion(ModelVersion.V4)
 
         then:
-        client.getApiVersion() == ApiVersion.V4
+        client.getModelVersion() == ModelVersion.V4
     }
 
-    def "Setting ApiVersion to null returns null"() {
+    def "Setting ModelVersion to null returns null"() {
         given:
         def client = new Client()
-        client.setApiVersion(ApiVersion.V3)
+        client.setModelVersion(ModelVersion.V3)
 
         when:
-        client.setApiVersion(null)
+        client.setModelVersion(null)
 
         then:
-        client.getApiVersion() == null
+        client.getModelVersion() == null
     }
 }

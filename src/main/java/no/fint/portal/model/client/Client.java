@@ -57,9 +57,9 @@ public final class Client implements BasicLdapEntry {
     @Attribute(name = "fintClientManaged")
     private boolean managed;
 
-    @Schema(defaultValue = "API version the client uses. Either V3 or V4.")
-    @Attribute(name = "fintClientApiVersion")
-    private String apiVersion;
+    @Schema(defaultValue = "Model version the client uses. Either V3 or V4.")
+    @Attribute(name = "fintClientModelVersion")
+    private String modelVersion;
 
     public Client() {
         components = new ArrayList<>();
@@ -168,11 +168,11 @@ public final class Client implements BasicLdapEntry {
         return managed;
     }
 
-    public ApiVersion getApiVersion() {
-        return apiVersion != null ? ApiVersion.valueOf(apiVersion) : null;
+    public ModelVersion getModelVersion() {
+        return modelVersion != null ? ModelVersion.valueOf(modelVersion) : null;
     }
 
-    public void setApiVersion(ApiVersion apiVersion) {
-        this.apiVersion = apiVersion != null ? apiVersion.name() : null;
+    public void setModelVersion(ModelVersion modelVersion) {
+        this.modelVersion = modelVersion != null ? modelVersion.name() : null;
     }
 }
