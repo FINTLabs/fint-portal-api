@@ -21,6 +21,7 @@ class ClientObjectServiceSpec extends Specification {
         client.password != null
         client.dn.contains("orgName")
         client.name != null
+        client.modelVersion == ModelVersion.V3
     }
 
     def "Get Client Base"() {
