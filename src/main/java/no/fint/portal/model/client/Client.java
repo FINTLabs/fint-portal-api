@@ -57,7 +57,7 @@ public final class Client implements BasicLdapEntry {
     @Attribute(name = "fintClientManaged")
     private boolean managed;
 
-    @Schema(defaultValue = "Model version the client uses. Either V3 or V4.")
+    @Schema(defaultValue = "V3")
     @Attribute(name = "fintClientModelVersion")
     private String modelVersion;
 
