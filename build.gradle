@@ -39,4 +39,8 @@ dependencies {
     testImplementation 'cglib:cglib-nodep:3.3.0'
 }
 
+test {
+    useJUnitPlatform()
+}
+
 apply from: 'https://raw.githubusercontent.com/FINTLabs/fint-buildscripts/master/reposilite.ga.gradle'
