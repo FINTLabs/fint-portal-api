@@ -51,6 +51,29 @@ class ClientObjectServiceSpec extends Specification {
         client.getModelVersion() == null
     }
 
+    def "Setup Client defaults ModelVersion to V3 when not set"() {
+        given:
+        def client = new Client(name: "TestClient")
+
+        when:
+        clientObjectService.setupClient(client, new Organisation(name: "orgName"))
+
+        then:
+        client.modelVersion == ModelVersion.V3
+    }
+
+    def "Setup Client preserves ModelVersion when already set"() {
+        given:
+        def client = new Client(name: "TestClient")
+        client.setModelVersion(ModelVersion.V4)
+
+        when:
+        clientObjectService.setupClient(client, new Organisation(name: "orgName"))
+
+        then:
+        client.modelVersion == ModelVersion.V4
+    }
+
     def "Set and get ModelVersion V3"() {
         given:
         def client = new Client()
