@@ -1,6 +1,7 @@
 package no.fint.portal.model.client;
 
 import lombok.extern.slf4j.Slf4j;
+import no.fint.portal.exceptions.EntityFoundException;
 import no.fint.portal.ldap.LdapService;
 import no.fint.portal.model.asset.Asset;
 import no.fint.portal.model.asset.AssetService;
@@ -43,12 +44,14 @@ public class ClientService {
         client.setClientId(oAuthClient.getClientId());
 
         boolean created = ldapService.createEntry(client);
-        if (created) {
-            Asset primaryAsset = assetService.getPrimaryAsset(organisation);
-            assetService.linkClientToAsset(primaryAsset, client);
+        if (!created) {
+            throw new EntityFoundException(String.format("Client %s already exists", client.getName()));
         }
 
-        return created;
+        Asset primaryAsset = assetService.getPrimaryAsset(organisation);
+        assetService.linkClientToAsset(primaryAsset, client);
+
+        return true;
     }
 
     public List<Client> getClients(String orgName) {

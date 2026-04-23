@@ -23,6 +23,9 @@ public class ClientObjectService {
                         .build()
         );
         client.setSecret(PasswordUtility.generateSecret());
+        if (client.getModelVersion() == null) {
+            client.setModelVersion(ModelVersion.V3);
+        }
     }
 
     public Name getClientBase(String orgUuid) {

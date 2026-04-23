@@ -1,5 +1,6 @@
 package no.fint.portal.model.client
 
+import no.fint.portal.exceptions.EntityFoundException
 import no.fint.portal.ldap.LdapService
 import no.fint.portal.model.asset.AssetService
 import no.fint.portal.model.organisation.Organisation
@@ -44,6 +45,20 @@ class ClientServiceSpec extends Specification {
         client.name != null
         1 * ldapService.createEntry(_ as Client) >> true
         1 * oauthService.addOAuthClient(_ as String) >> new OAuthClient()
+    }
+
+    def "Add Client throws EntityFoundException when client already exists"() {
+        given:
+        def client = ObjectFactory.newClient()
+
+        when:
+        clientService.addClient(client, new Organisation(name: "name"))
+
+        then:
+        1 * oauthService.addOAuthClient(_ as String) >> new OAuthClient()
+        1 * ldapService.createEntry(_ as Client) >> false
+        0 * assetService._
+        thrown(EntityFoundException)
     }
 
     def "Get Clients"() {
