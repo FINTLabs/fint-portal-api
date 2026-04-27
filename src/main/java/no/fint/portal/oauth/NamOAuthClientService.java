@@ -3,6 +3,7 @@ package no.fint.portal.oauth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.fint.portal.exceptions.EntityFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,11 +11,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.Collections;
 
 @Service
@@ -72,10 +73,26 @@ public class NamOAuthClientService {
             OAuthClient client = mapper.readValue(response, OAuthClient.class);
             log.info("Client ID {} created.", client.getClientId());
             return client;
+        } catch (OAuth2Exception e) {
+            if (isAlreadyExists(e)) {
+                log.warn("OAuth client {} already exists in NAM", name);
+                throw new EntityFoundException(String.format("OAuth client already exists in NAM: %s", name), e);
+            }
+            log.error("Unable to create client {}", name, e);
+            throw new RuntimeException(e);
         } catch (Exception e) {
             log.error("Unable to create client {}", name, e);
             throw new RuntimeException(e);
         }
+    }
+
+    // NAM has no structured "already exists" signal — it returns the generic OAuth2 "invalid_client"
+    // code for several distinct conditions (bad creds, missing client, duplicate, ...). The only way
+    // to single out a duplicate is the human-readable description. Revisit if NAM exposes a cleaner signal.
+    private static boolean isAlreadyExists(OAuth2Exception e) {
+        return "invalid_client".equals(e.getOAuth2ErrorCode())
+                && e.getMessage() != null
+                && e.getMessage().toLowerCase().contains("already exists");
     }
 
     public void removeOAuthClient(String clientId) {

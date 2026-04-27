@@ -1,8 +1,10 @@
 package no.fint.portal.oauth
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.fint.portal.exceptions.EntityFoundException
 import org.springframework.http.HttpEntity
 import org.springframework.security.oauth2.client.OAuth2RestTemplate
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException
 import spock.lang.Specification
 
 class NamOAuthClientServiceSpec extends Specification {
@@ -27,5 +29,33 @@ class NamOAuthClientServiceSpec extends Specification {
         client != null
         !client.getClientId().isEmpty()
         !client.getClientSecret().isEmpty()
+    }
+
+    def "Add OAuth Client throws EntityFoundException when NAM reports invalid_client/already exists"() {
+        given:
+        def cause = new InvalidClientException("The client already exists. Please contact administrator")
+
+        when:
+        namOAuthClientService.addOAuthClient("c_duplicate")
+
+        then:
+        1 * restTemplate.postForObject(_ as String, _ as HttpEntity, _ as Class, _) >> { throw cause }
+        def thrown = thrown(EntityFoundException)
+        thrown.message == "OAuth client already exists in NAM: c_duplicate"
+        thrown.cause.is(cause)
+    }
+
+    def "Add OAuth Client wraps unrelated OAuth2Exception in RuntimeException"() {
+        given:
+        def cause = new InvalidClientException("Bad credentials")
+
+        when:
+        namOAuthClientService.addOAuthClient("c_other")
+
+        then:
+        1 * restTemplate.postForObject(_ as String, _ as HttpEntity, _ as Class, _) >> { throw cause }
+        def thrown = thrown(RuntimeException)
+        !(thrown instanceof EntityFoundException)
+        thrown.cause.is(cause)
     }
 }
