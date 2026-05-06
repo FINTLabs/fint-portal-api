@@ -3,12 +3,14 @@ package no.fint.portal.model.client;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.ToString;
 import no.fint.portal.ldap.BasicLdapEntry;
+import no.fint.portal.utilities.LdapTimestamp;
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 import org.springframework.ldap.support.LdapNameBuilder;
 
 import javax.naming.Name;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +62,18 @@ public final class Client implements BasicLdapEntry {
     @Schema(defaultValue = "V3")
     @Attribute(name = "fintClientModelVersion")
     private String modelVersion;
+
+    /**
+     * Raw value of the directory-managed {@code lastLoginTime} attribute.
+     * <p>
+     * The directory stores this as LDAP Generalized Time in the format
+     * {@code yyyyMMddHHmmss'Z'} (UTC), e.g. {@code 20260429080336Z}.
+     * Populated by Spring LDAP ODM on read; never written by the API.
+     * <p>
+     * Use {@link #getLastLoginTime()} for the parsed, API-friendly form.
+     */
+    @Attribute(name = "lastLoginTime")
+    private String lastLoginTime;
 
     public Client() {
         components = new ArrayList<>();
@@ -174,5 +188,20 @@ public final class Client implements BasicLdapEntry {
 
     public void setModelVersion(ModelVersion modelVersion) {
         this.modelVersion = modelVersion != null ? modelVersion.name() : null;
+    }
+
+    /**
+     * Timestamp of the last successful login, parsed from the LDAP
+     * Generalized Time value supplied by the directory.
+     * <p>
+     * Serialized as ISO-8601 (e.g. {@code "2026-04-29T08:03:36"}) so the API
+     * exposes a standard date-time string rather than the LDAP storage format.
+     *
+     * @return the parsed timestamp, or {@code null} if the directory has no value
+     */
+    @Schema(description = "Timestamp of the last successful login for the client, populated by the directory.",
+            type = "string", format = "date-time", example = "2026-04-29T08:03:36")
+    public LocalDateTime getLastLoginTime() {
+        return lastLoginTime != null ? LdapTimestamp.toLocalTimeDate(lastLoginTime) : null;
     }
 }
