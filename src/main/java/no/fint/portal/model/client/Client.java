@@ -72,7 +72,7 @@ public final class Client implements BasicLdapEntry {
      * <p>
      * Use {@link #getLastLoginTime()} for the parsed, API-friendly form.
      */
-    @Attribute(name = "lastLoginTime")
+    @Attribute(name = "lastLoginTime", readonly = true)
     private String lastLoginTime;
 
     public Client() {
