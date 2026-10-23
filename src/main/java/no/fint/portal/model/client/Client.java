@@ -1,5 +1,6 @@
 package no.fint.portal.model.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.ToString;
 import no.fint.portal.ldap.BasicLdapEntry;
@@ -199,8 +200,10 @@ public final class Client implements BasicLdapEntry {
      *
      * @return the parsed timestamp, or {@code null} if the directory has no value
      */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Timestamp of the last successful login for the client, populated by the directory.",
-            type = "string", format = "date-time", example = "2026-04-29T08:03:36")
+            type = "string", format = "date-time", example = "2026-04-29T08:03:36",
+            accessMode = Schema.AccessMode.READ_ONLY)
     public LocalDateTime getLastLoginTime() {
         return lastLoginTime != null ? LdapTimestamp.toLocalTimeDate(lastLoginTime) : null;
     }
