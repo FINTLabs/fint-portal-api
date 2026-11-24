@@ -30,18 +30,18 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     implementation 'org.yaml:snakeyaml'
 
-    implementation 'org.apache.commons:commons-pool2:2.11.1'
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-pool2:2.13.1'
+    implementation 'org.apache.commons:commons-lang3:3.22.0'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.security:spring-security-web'
 
 
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
-    testImplementation 'org.spockframework:spock-spring:2.3-groovy-4.0'
+    testImplementation 'org.spockframework:spock-core:2.5-groovy-4.0'
+    testImplementation 'org.spockframework:spock-spring:2.5-groovy-4.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'cglib:cglib-nodep:3.3.0'
 }
