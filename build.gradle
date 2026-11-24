@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '3.5.10' apply false
+    id 'org.springframework.boot' version '4.2.0' apply false
     id 'groovy'
     id 'maven-publish'
     id 'java-library'
@@ -22,12 +22,12 @@ repositories {
 
 dependencies {
 
-    api platform('org.springframework.boot:spring-boot-dependencies:3.5.10')
-    testImplementation platform('org.springframework.boot:spring-boot-dependencies:3.5.10')
+    api platform('org.springframework.boot:spring-boot-dependencies:4.2.0')
+    testImplementation platform('org.springframework.boot:spring-boot-dependencies:4.2.0')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.ldap:spring-ldap-core'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.1'
     implementation 'org.yaml:snakeyaml'
 
     implementation 'org.apache.commons:commons-pool2:2.11.1'
